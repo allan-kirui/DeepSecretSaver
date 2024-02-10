@@ -1,4 +1,5 @@
 from AccountManager import AccountManager
+import hashlib
 def get_username_password():
     print("Please provide your username or enter q to quit: ")
     username = input()
@@ -12,7 +13,7 @@ def get_username_password():
 
 
 def login(accountManager, username, password):
-    valid = accountManager.is_valid_credentials(username, password)
+    valid = accountManager.is_valid_credentials(username, password.strip())
     if valid:
         print("Welcome to Deep Secret Saver "+ accountManager.get_account(username).get_username() + "!")
         while True:

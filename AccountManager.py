@@ -1,4 +1,5 @@
 from Account import Account
+import hashlib
 class AccountManager:
     def __init__(self):
         self.accounts = {
@@ -19,7 +20,8 @@ class AccountManager:
             return self.accounts[username]
 
     def is_valid_credentials(self, username, password) -> bool:
-        if username in self.accounts and password == self.accounts[username].get_password():
+        pwd = hashlib.sha256(password.encode('utf-8')).hexdigest()
+        if username in self.accounts and pwd == self.accounts[username].get_password():
             return True
         else:
             return False
