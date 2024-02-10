@@ -57,53 +57,66 @@ def get_username_password():
     check_quit(password)
 
     return username, password
+
+def login(accountManager,username, password):
+    valid = accountManager.is_valid_credentials(username, password)
+    if valid:
+        print("Welcome to Deep Secret Saver "+ accountManager.get_account(username).get_username() + "!")
+        while True:
+            print("******************")
+            print("To retreive secret please enter 'r'")
+            print("To modify secret please enter 'm'")
+            print("To logout please enter 'o'")
+            print("******************")
+            action = input()
+
+            if action == 'r':
+                secret = accountManager.get_account(username).get_dark_secret()
+                print(accountManager.get_account(username).get_username() + "'s secret is " + secret)
+            elif action == 'm':
+                accountManager.get_account(username).set_dark_secret()
+            elif action == "o":
+                print("Successfully logged out")
+                break
+    else:
+        print("Invalid username or password")
+
+def create_account(accountManager,username, password):
+    addedAccSuccess = accountManager.add_account(username, password)
+    if addedAccSuccess:
+        print("Account Created")
+        print("Please login to your account")
+    else:
+        print("Invalid username or password")
 def check_quit(keyword):
     if keyword == 'q':
         print("Goodbye")
         exit()
 
 
-# Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     accountManager = AccountManager()
     while True:
+        print("******************")
         print("Welcome to Deep Secret Saver")
         print("To login please input 'l'")
         print("To create an account please input 'c'")
+        print("To quit please input 'q'")
+        print("******************")
         startAction = input()
-
-        username, password = get_username_password()
-
 
         if startAction == 'l':
             # LOG IN
-            valid = accountManager.is_valid_credentials(username, password)
-            if valid:
-                print("Welcome to Deep Secret Saver")
-                while True:
-                    print("To retreive secret please enter 'r'")
-                    print("To modify secret please enter 'm'")
-                    print("To logout please enter 'o'")
-                    action = input()
-
-                    if action == 'r':
-                        secret = accountManager.get_account(username).get_dark_secret()
-                        print(accountManager.get_account(username).get_username() + "'s secret is " + secret)
-                    elif action == 'm':
-                        accountManager.get_account(username).set_dark_secret()
-                    elif action == "o":
-                        print("Successfully logged out")
-                        break
-            else:
-                print("Invalid username or password")
+            username, password = get_username_password()
+            login(accountManager, username, password)
 
         elif startAction == 'c':
             # CREATE ACCOUNT
-            addedAccSuccess = accountManager.add_account(username, password)
-            if addedAccSuccess:
-                print("Account Created")
-                print("Please login to your account")
-            else:
-                print("Invalid username or password")
+            username, password = get_username_password()
+            create_account(accountManager, username, password)
+
+        elif startAction == 'q':
+            print("Goodbye")
+            break
 
 
