@@ -14,17 +14,27 @@ def deepDarkSecret(username):
     secret = {"admin": "I run the world"}
     print(username + " deep dark secret is " + secret["admin"])
 
+def check_quit(keyword):
+    if keyword == 'q':
+        print("Goodbye")
+        exit()
+
+
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    print("Please provide your username: ")
-    username = input()
-    print("Hi " + username)
-    print("Please provide your password: ")
-    password = input()
 
-    valid = is_valid_credentials(username, password)
-    if valid:
-        deepDarkSecret(username)
-    else:
-        print("Get outta here")
+    while True:
+        print("Please provide your username or enter q to quit: ")
+        username = input()
+        check_quit(username)
+        print("Hi " + username)
+        print("Please provide your password or enter q to quit: ")
+        password = input()
+        check_quit(password)
+
+        valid = is_valid_credentials(username, password)
+        if valid:
+            deepDarkSecret(username)
+        else:
+            print("Invalid username or password")
 
