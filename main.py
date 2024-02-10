@@ -1,3 +1,5 @@
+import yaml
+
 from AccountManager import AccountManager
 import hashlib
 def get_username_password():
@@ -31,13 +33,14 @@ def login(accountManager, username, password):
                 accountManager.get_account(username).set_dark_secret()
             elif action == "o":
                 print("Successfully logged out")
+                accountManager.save_accounts()
                 break
     else:
         print("Invalid username or password")
 
 
 def create_account(accountManager, username, password):
-    addedAccSuccess = accountManager.add_account(username, password)
+    addedAccSuccess = accountManager.add_account_hash(username, password)
     if addedAccSuccess:
         print("Account Created")
         print("Please login to your account")

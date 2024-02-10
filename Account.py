@@ -2,7 +2,7 @@ import hashlib
 class Account:
     def __init__(self, username, password):
         self.username = username
-        self.password = hashlib.sha256(password.encode('utf-8')).hexdigest()
+        self.password = password
         self.secret = "default secret"
 
     def get_username(self):
