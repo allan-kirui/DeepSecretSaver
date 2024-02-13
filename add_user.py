@@ -1,5 +1,6 @@
 import hashlib
 import sqlite3
+import pyautogui
 
 if __name__ == '__main__':
     # Connect to DB
@@ -8,15 +9,12 @@ if __name__ == '__main__':
 
     # check if username is unique
     users = dict(cur.execute("SELECT * FROM users;"))
-    user_input = input('Enter your usename')
+    user_input = input('Enter your usename:')
     while user_input in users.keys():
         user_input = input('Username exists. Please enter a unique usename')
 
-    password = input('Enter your password')
+    password = pyautogui.password(text='Enter your password:', title='Password', mask='*')
     password_hash = hashlib.sha256(password.encode('utf-8')).hexdigest()
-
-    users = dict(cur.execute("SELECT * FROM users;"))
-
 
     cur.execute("INSERT INTO users VALUES(?,?)", (user_input, password_hash))
     conn.commit()
