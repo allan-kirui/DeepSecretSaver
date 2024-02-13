@@ -1,23 +1,18 @@
-from Account import Account
 import hashlib
-import yaml
+import sqlite3
+
+
 class AccountManager:
     def __init__(self):
         self.accounts = {}
-        self.load_accounts()
+        self.connection, self.cursor = self.connect_to_db()
 
-    def add_account(self, username, password):
-        if username not in self.accounts:
-            account = Account(username, password)
-            self.accounts[account.username] = account
-            return True
-        else:
-            return False
-
-    def add_account_hash(self, username, password):
-        if username not in self.accounts:
-            account = Account(username, hashlib.sha256(password.encode('utf-8')).hexdigest())
-            self.accounts[account.username] = account
+    def add_account_hash_db(self, username, password):
+        users = self.get_all_accounts_db()
+        if username not in users:
+            password_hash = hashlib.sha256(password.encode('utf-8')).hexdigest()
+            self.cursor.execute("INSERT INTO users VALUES(?,?,?)", (username, password_hash, "default secret"))
+            self.connection.commit()
             return True
         else:
             return False
@@ -26,26 +21,37 @@ class AccountManager:
         if username in self.accounts:
             return self.accounts[username]
 
-    def get_all_accounts(self):
-        accounts = self.accounts
-        all_accounts = []
-        for username, account in accounts.items():
-            all_accounts.append({'username': username, 'password': account.get_password()})
-        return all_accounts
+    # returns dictionary of e.g { 'username': ['password','secret']
+    def get_all_accounts_db(self):
+        self.cursor.execute("SELECT * FROM users;")
+        # columns = [col[0] for col in self.cursor.description]
 
-    def load_accounts(self):
-        with open('credentials.yaml', 'r') as file:
-            credentials = yaml.safe_load(file)
-        for acc in credentials:
-            self.add_account(acc['username'], acc['password'])
+        users = {row[0]: [row[1], row[2]] for row in self.cursor.fetchall()}
+        return users
 
-    def save_accounts(self):
-        with open('credentials.yaml', 'w') as file:
-            yaml.safe_dump(self.get_all_accounts(), file)
+    def connect_to_db(self):
+        conn = sqlite3.connect('ppab5.db')
+        cur = conn.cursor()
 
-    def is_valid_credentials(self, username, password) -> bool:
-        pwd = hashlib.sha256(password.encode('utf-8')).hexdigest()
-        if username in self.accounts and pwd == self.accounts[username].get_password():
+        return conn, cur
+
+    # checks if credentials entered, match with what was saved
+    def is_valid_credentials_db(self, username, password) -> bool:
+        password_hash = hashlib.sha256(password.encode('utf-8')).hexdigest()
+        all_accounts = self.get_all_accounts_db()
+        if username in all_accounts.keys() and password_hash == all_accounts[username][0]:
             return True
         else:
             return False
+
+    # returns user secret from db, it is at index 1 in list
+    def get_dark_secret_db(self, username):
+        secret = self.get_all_accounts_db()[username][1]
+        return secret
+
+    def set_dark_secret_db(self, username):
+        print("Please input secret for your account")
+        secret = input()
+        self.cursor.execute(f"UPDATE users SET secret = '{secret}' WHERE username = '{username}';")
+        self.connection.commit()
+        print("Secret saved")

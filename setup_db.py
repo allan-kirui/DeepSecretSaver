@@ -4,7 +4,7 @@ import sqlite3
 def setup_db(database_name):
     connection = sqlite3.connect(database_name)
     cur = connection.cursor()
-    cur.execute("CREATE TABLE users (username VARCHAR, password_hash VARCHAR);")
+    cur.execute("CREATE TABLE users (username VARCHAR, password_hash VARCHAR, secret VARCHAR);")
     return connection, cur
 
 
