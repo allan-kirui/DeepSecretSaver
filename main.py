@@ -1,7 +1,12 @@
 import pyautogui
 from AccountManager import AccountManager
 
+
 def get_username_password():
+    """
+    gets username and password from user
+    :return tuple of username and password:
+    """
     print("Please provide your username or enter q to quit: ")
     username = input()
     check_quit(username)
@@ -14,6 +19,12 @@ def get_username_password():
 
 
 def login(accountManager, username, password):
+    """
+    logs in verified users, and allows them to perform various actions
+    :param accountManager:
+    :param username:
+    :param password:
+    """
     valid = accountManager.is_valid_credentials_db(username, password.strip())
     if valid:
         print("Welcome to Deep Secret Saver "+ username + "!")
@@ -38,6 +49,12 @@ def login(accountManager, username, password):
 
 
 def create_account(accountManager, username, password):
+    """
+    creates accounts for new users
+    :param accountManager:
+    :param username:
+    :param password:
+    """
     addedAccSuccess = accountManager.add_account_hash_db(username, password)
     if addedAccSuccess:
         print("Account Created")
@@ -47,6 +64,10 @@ def create_account(accountManager, username, password):
 
 
 def check_quit(keyword):
+    """
+    quits the app if appropriate keyword is input by user
+    :param keyword:
+    """
     if keyword == 'q':
         print("Goodbye")
         exit()

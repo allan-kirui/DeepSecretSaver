@@ -2,6 +2,7 @@ import sqlite3
 import yaml
 import os
 
+
 class DatabaseManager:
     def __init__(self):
         self.configs = None
@@ -13,16 +14,29 @@ class DatabaseManager:
         self.setup_db()
 
     def get_configs(self):
+        """
+        gets configs from yaml file
+        """
         with open('config.yaml', 'r') as ymlfile:
             self.configs = yaml.safe_load(ymlfile)
 
     def get_database_name(self):
+        """
+        returns database name
+        :return:
+        """
         return self.database_name
 
     def set_database_name(self):
+        """
+        sets database name as read from yaml file
+        """
         self.database_name = self.configs[0]['db-name']
 
     def get_tables_and_num_rows(self):
+        """
+        prints tables and number of rows from the db
+        """
         self.cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
         table_names = self.cursor.fetchall()
         table_info = {}
@@ -37,6 +51,9 @@ class DatabaseManager:
             print(f"- Table: {table}, Rows: {rows}")
 
     def setup_db(self):
+        """
+        sets up the database and performs appropriate actions if it already exists
+        """
         uriFile = "file:"
         mode = "?mode=rw"
 
@@ -61,6 +78,9 @@ class DatabaseManager:
             self.create_db()
 
     def create_db(self):
+        """
+        connects to db and creates tables
+        """
         self.connection = sqlite3.connect(self.database_name)
         self.cursor = self.connection.cursor()
         self.cursor.execute("CREATE TABLE users (username VARCHAR, password_hash VARCHAR, secret VARCHAR);")
