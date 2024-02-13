@@ -77,5 +77,5 @@ if __name__ == '__main__':
             print("Goodbye")
             break
 
-    accountManager.connection.close()
+    accountManager.database.connection.close()
 

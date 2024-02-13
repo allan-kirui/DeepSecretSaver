@@ -1,18 +1,19 @@
 import hashlib
 import sqlite3
+from DatabaseManager import DatabaseManager
 
 
 class AccountManager:
     def __init__(self):
         self.accounts = {}
-        self.connection, self.cursor = self.connect_to_db()
+        self.database = DatabaseManager()
 
     def add_account_hash_db(self, username, password):
         users = self.get_all_accounts_db()
         if username not in users:
             password_hash = hashlib.sha256(password.encode('utf-8')).hexdigest()
-            self.cursor.execute("INSERT INTO users VALUES(?,?,?)", (username, password_hash, "default secret"))
-            self.connection.commit()
+            self.database.cursor.execute("INSERT INTO users VALUES(?,?,?)", (username, password_hash, "default secret"))
+            self.database.connection.commit()
             return True
         else:
             return False
@@ -23,10 +24,10 @@ class AccountManager:
 
     # returns dictionary of e.g { 'username': ['password','secret']
     def get_all_accounts_db(self):
-        self.cursor.execute("SELECT * FROM users;")
+        self.database.cursor.execute("SELECT * FROM users;")
         # columns = [col[0] for col in self.cursor.description]
 
-        users = {row[0]: [row[1], row[2]] for row in self.cursor.fetchall()}
+        users = {row[0]: [row[1], row[2]] for row in self.database.cursor.fetchall()}
         return users
 
     def connect_to_db(self):
@@ -52,6 +53,6 @@ class AccountManager:
     def set_dark_secret_db(self, username):
         print("Please input secret for your account")
         secret = input()
-        self.cursor.execute(f"UPDATE users SET secret = '{secret}' WHERE username = '{username}';")
-        self.connection.commit()
+        self.database.cursor.execute(f"UPDATE users SET secret = '{secret}' WHERE username = '{username}';")
+        self.database.connection.commit()
         print("Secret saved")
